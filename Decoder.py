@@ -5,7 +5,7 @@ class Decoder(Layer):
   def __init__(self,embdim, intdim,outdim, enc_dimh, dec_dim_h, t_drop):
     self.emb=Embedding(intdim,enbdim)
     self.a=Attention(enc_dih,dec_dim_h)
-    self.RNN=GRU(embdim+ enc_dimh))
+    self.RNN=GRU(embdim+ enc_dimh)
     self.dropout=Dropout(t_drop)
     self.output=Dense(dec_dim_h,outdim)
     
