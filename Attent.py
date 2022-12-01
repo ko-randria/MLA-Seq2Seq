@@ -8,7 +8,8 @@ class attention_trad (Layer) :
         #Weight matrices 
         self.Va = tf.Variable (initial_value=w_init(shape=(inp_shape[-1], self.units),) trainable=True)#shape : n, with n : number of hidden states 
         self.Wa = tf.Variable (initial_value = w_init(shape=([inp_shape[-1],inp_shape[-1]],self.units),) trainable=True) #shape : n*n
-        self.Ua = tf.Variable (initial_value = w_init(shape=([inp_shape[-1],2inp_shape[-1]],self.units),)trainable=True) #shape : n*2n
+        self.Ua = tf.Variable (initial_value = w_init(shape=([inp_shape[-1],inp_shape[-1]],self.units),)trainable=True) #shape : n*2n
+        
     def call (self, outp_enc, hidden_dec ) : # hidden state of the decoder, outp_enc = outputs of the encoder
         #We compute the attention : 
         a  = self.Va.T*tanh(self.Wa*hidden_dec[-1]+self.Ua*outp_enc )  #hidden_dec[-1] : decoder hidden state of i-1,
