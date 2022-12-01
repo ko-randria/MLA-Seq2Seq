@@ -6,7 +6,6 @@ class decoder (Layer) :
         self.attention = attention_trad
         self.embedding = Embedding(size_out, size_emb) #Embedding matrix of the target word
         self.rnn = GRU (enc_dimh)
-        self.lin = Dense (size_out, activation = None)
         self.dropout = Dropout(t_drop)
         
     def build (self, inp_shape = dec_hdim) : #State of the layer (weights)
