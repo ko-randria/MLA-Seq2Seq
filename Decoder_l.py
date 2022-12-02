@@ -1,3 +1,9 @@
+from tensorflow.keras.layers import Embedding, Dropout, GRU
+from tensorflow.keras.layers import Layer
+from tensorflow.keras.activations import *
+import tensorflow as tf
+import numpy as np 
+
 class Decoder (Layer) :
 
     def __init__(self,max_hid_lay= 500,  size_out, size_emb, enc_dimh, dec_dimh, t_drop, attention): 
