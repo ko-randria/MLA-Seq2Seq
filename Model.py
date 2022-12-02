@@ -6,16 +6,16 @@ import numpy as np
 import Attention, Decoder, Encoder
 
 class Model(Layer):
-    def __init__(self, seq, encoder, decoder, param):
+    def __init__(self, seq, Encoder, Decoder, param):
 
         super(Model, self)._init_()
 
-        self.encoder = encoder
-        self.decoder = decoder
+        self.encoder = Encoder
+        self.decoder = Decoder
     
     def call(self, source):
         # compute the encoder outputs and hidden states
-        encoder_outp, hidden = encoder.call(source)
+        encoder_outp, hidden = Encoder.call(source)
 
         # Decoder
 
