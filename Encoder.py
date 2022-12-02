@@ -4,10 +4,10 @@ from tensorflow.keras.layers import Bidirectional , Attention, Layer
 from tensorflow.keras.activations import *
 import tensorflow as tf
 
-class encoder (Layer):
+class Encoder (Layer):
      
      def _init_(self, embdim, intdim, enc_dimh, dec_dim_h, t_drop):
-         super(encoder, self)._init_()
+         super(Encoder, self)._init_()
          #ri :output of the reset gate
          self.emb = Embedding(intdim, embdim) #size of the sequence, and dimension of the embedding
          self.RNN =Bidirectional(GRU (enc_dimh)) #Choose the GRU because he returns the hidden states and the outputs 
