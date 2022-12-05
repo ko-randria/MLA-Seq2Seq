@@ -4,7 +4,7 @@ import tensorflow as tf
 import numpy as np 
 
 class Attention_trad (Layer) :
-    def __init__(self, enc_outdim, dec_hdim) :    #We need the hidden state of the decoder and the encoder 
+    def __init__(self, enc_outdim, dec_hdim) :     #We need the hidden state of the decoder and the encoder 
 
         super(Attention_trad, self).__init__()
         
