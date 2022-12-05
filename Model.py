@@ -3,12 +3,14 @@ from tensorflow.keras.layers import Bidirectional , Attention, Layer
 from tensorflow.keras.activations import *
 import tensorflow as tf
 import numpy as np
-import Attention, Decoder, Encoder
+from Attention import Attention
+from Decoder import Decoder
+from Encoder import Encoder
 
 class Model(Layer):
     def __init__(self, seq, Encoder, Decoder, param):
 
-        super(Model, self)._init_()
+        super(Model, self).__init__()
 
         self.encoder = Encoder
         self.decoder = Decoder
