@@ -25,7 +25,7 @@ class Decoder (Layer) :
  
     def call (self, entr, hidden, outp_enc, iterat ) :
         emb =  self.embedding(entr)
-        emb = dropout(emb)
+        emb = Dropout(emb)
         attr = self.attention(hidden, outp_enc ) #We compute the attention between this two terms 
         outp, hidden = self.rnn(emb)
         t = self.U0 * hidden + self.V0 * emb * outp + self.C0 * attr
