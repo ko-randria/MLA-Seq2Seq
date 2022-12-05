@@ -14,43 +14,40 @@ import Decoder
 class model_training:
     def __init__(self, param, model, loss):
 
-        # this is too create model in another function
-        # self.encoder = Encoder(layer)
-        # self.decoder = Decoder(layer)
-        # self.attention = Attention()
-
         self.model = model
         self.loss_function = tf.keras.losses.MeanSquaredError()
-
-        self.n = 1000 # hidden layer
-        self.m = 620 # word embedding
-        self.l = 500 # maxeout hidden layour in the deep output
-        self.n_p = 1000 # The number of hidden units in the alignments model
-
-        # We initialize the weight matrices
-        mu, sigma = 0, 0.001
-        self.Ua = np.random.normal(mu, sigma ,size=(self.n,2*self.n))
-        self.Wa = np.random.normal(mu, sigma ,size=(self.n_p,self.n))
-        # I don't know if we have to initialize the different weight matrices for each step
-        # like they said in the report
-        # if we had to, we need to find how to initialize those following and how to force encoder and decoder to use them:
-    # U =
-    # Uz =
-    # Ur =
-
-    # # ???
-    # U_f =
-    # Uz_f =
-    # Ur_f =
-
-    # U_b =
-    # Uz_b =
-    # Ur_b =
-    # # ???
         self.optimizer = tf.keras.optimizers.Adadelta(learning_rate=10e-6, rho=0.95) # SGD algorithm with Adadelta
+
+        self.n = param[0] # 1000 - hidden layer
+        self.m = param[1] # 620 - word embedding
+        self.l = param[2] # 500 - maxeout hidden layour in the deep output
+        self.n_p = param[3] # 1000 - The number of hidden units in the alignments model
+
+
+    def convert_time(total_s):
+        total_s = np.round(total_s / 60) * 60
+        time_h = np.floor(total_s / 3600)
+        total_s -= time_h * 3600
+        time_m = np.floor(total_s / 60)
+        total_s -= time_m * 60
+        time_s = total_s
+        return '%ih:%im:%.2fs'%(time_h,time_m,time_s)
 
     @tf.function
     def train_step(self, data, labels):
+        # Training step, this methods return the loss value for one step of learning on the training dataset
+        with tf.GradientTape() as tape:
+            # forward pass
+            predictions = self.model(data)
+            loss = self.loss_function(labels, predictions)
+        # calcul des gradients
+        gradient = tape.gradient(loss, self.model.trainable_variables)
+        # retropropagation
+        self.optimizer.apply_gradients(zip(gradient, self.model.trainable_variables))
+        return loss
+
+    @tf.function
+    def evaluate_step(self, data, labels):
         with tf.GradientTape() as tape:
             # forward pass
             predictions = self.model(data)
@@ -60,29 +57,26 @@ class model_training:
         # retropropagation
         self.optimizer.apply_gradients(zip(gradient, self.model.trainable_variables))
 
-    def evaluate_step(self):
-        pass
-
-    def training_loop(self, epochs, train_set, print_metric):
+    def training_loop(self, epochs, train_set, output, print_metric):
+        average_time_step = []
+        
         total_steps=epochs*np.shape(train_set)[0]
         for epoch in range(epochs):
             start_epoch=time.time()
-
+            train_loss = 0
 
             for step in range(len(train_set)):
-                train_loss = self.train_step()
-                evaluate_loss = self.evaluate_step()
-                # loss=
-                # loss+=loss
-                
+                start_step = time.time()
+                train_loss += self.train_step(train_set[step], output)
+                # evaluate_loss = self.evaluate_step()
+                average_time_step.append(time.time()-start_step)
             
 
             if epoch%int(epochs/10) == 0:
                 print('Epoch %d, Loss %f' % (epoch, float(train_loss)))
                 if print_metric: # on peut choisir si on affiche les metrics
 
-
-            """       print("\rEpoch %i/%i - Step %i/%i - Loss : %s%.3f (remaining time : %s)"
-                    %(epoch+1, epochs, step+1, train_set.__len__(), ' '*(4-len(str(int(np.round(loss_value))))), loss_value, convert_time(
-                        total_s=(total_steps - epoch*train_set.__len__() - step) * np.mean(average_time_step))), end='') """
-        return Model
+                    print("\rEpoch %i/%i - Step %i/%i - Loss : %s%.3f (remaining time : %s)"
+                        %(epoch+1, epochs, step+1, train_set.__len__(), ' '*(4-len(str(int(np.round(train_loss))))), train_loss, self.convert_time(
+                            total_s=(total_steps - epoch*train_set.__len__() - step) * np.mean(average_time_step))), end='')
+        return self.model
