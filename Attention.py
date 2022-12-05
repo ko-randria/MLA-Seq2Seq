@@ -12,8 +12,8 @@ class Attention_trad (Layer) :
         inp_shape = dec_hdim
         # Matrices Ua and Wa -> Gaussian distribution of mean 0 and variance of 0.001**2
         initializer = tf.keras.initializers.RandomNormal(mean=0.0, stddev=0.001**2)
-        self.Wa = initializer(shape=([inp_shape[-1],inp_shape[-1]],self.units), trainable=True) #shape : n*n
         self.Ua = initializer(shape=([inp_shape[-1],inp_shape[-1]],self.units), trainable=True) #shape : n*2n
+        self.Wa = initializer(shape=([inp_shape[-1],inp_shape[-1]],self.units), trainable=True) #shape : n*n
         
         # Va is initialized at zero
         v_init = tf.keras.initializers.Zeros() 
