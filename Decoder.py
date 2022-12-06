@@ -1,32 +1,40 @@
-from tensorflow.keras.layers import Embedding, Dropout, GRU
-from tensorflow.keras.layers import Layer
-from tensorflow.keras.activations import *
 import tensorflow as tf
+from tensorflow import keras
+from keras.layers import Embedding, Dropout, GRU
+from keras.layers import Layer
+from keras.activations import *
 import numpy as np 
+from Attention import Attention_S2S
 
 class Decoder (Layer) :
 
-    def __init__(self,max_hid_lay= 500,  size_out, size_emb, enc_dimh, dec_dimh, t_drop, attention): 
+    def __init__(self,max_hid_lay= 500,  size_out, size_emb, enc_dimh, dec_dimh, t_drop, Attention_trad): 
         
         super(Decoder, self).__init__()
         
-        self.attention = attention_trad
+        self.attention = Attention_trad
         self.embedding = Embedding(size_out, size_emb) #Embedding matrix of the target word
         self.rnn = GRU (enc_dimh)
         self.dropout = Dropout(t_drop)
         
-        # initialize the weights matrices (state of the layer)
-        # Weights matrice other than Ua and Wa -> Gaussian distribution of mean 0 and variance of 0.01**2
-        initializer = tf.keras.initializers.RandomNormal(mean=0.0, stddev=0.01**2)
-        self.W0 = initializer(shape=([size_out,max_hid_lay], self.units), trainable=True)#shape : n, with n : number of hidden states, max_hid_lay = 500, with max_hid_lay : size of the maxout hidden layer in the deep output, symbole l in the article 
-        self.U0 = initializer(shape=([2*max_hid_lay,enc_dimh] ,self.units), trainable=True)
-        self.V0 = initializer(shape=([2*max_hid_lay,size_emb] ,self.units), trainable=True)
-        self.C0 = initializer(shape=([2*max_hid_lay,2*enc_dimh] ,self.units), trainable=True)
+        self.size_out = size_out
+        self.max_hid_lay = max_hid_lay
+        self.enc_dimh = enc_dimh 
+        self.size_emb = size_emb
+        
+    def build(self):
+        w_init = tf.keras.initializers.RandomNormal(mean=0.0, stddev=0.001**2)
+        #Weight matrices  
+        self.W0 = tf.Variable(initial_value = w_init(shape=(self.size_out,self.max_hid_lay,self.units),), trainable=True)
+
+        self.U0 = tf.Variable(initial_value = w_init(shape=(2*self.max_hid_lay,self.enc_dimh,self.units),), trainable=True)
+        self.V0 = tf.Variable(initial_value = w_init(shape=(2*self.max_hid_lay,self.size_emb,self.units),), trainable=True)
+        self.C0 = tf.Variable(initial_value = w_init(shape=(2*self.max_hid_lay,2*self.enc_dimh,self.units),), trainable=True)
  
     def call (self, entr, hidden, outp_enc, iterat ) :
         emb =  self.embedding(entr)
         emb = Dropout(emb)
-        attr = self.attention(hidden, outp_enc ) #We compute the attention between this two terms 
+        attr = self.attention.call(hidden, outp_enc ) #We compute the attention between this two terms 
         outp, hidden = self.rnn(emb)
         t = self.U0 * hidden + self.V0 * emb * outp + self.C0 * attr
         ti = np.max(t[2*iterat-1:2*iterat])
