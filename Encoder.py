@@ -1,12 +1,12 @@
-from tensorflow.keras.layers import Dense , Input , SimpleRNN, LSTM , Embedding, Dropout, GRU
-from tensorflow.keras.layers import Bidirectional , Attention, Layer
-#from tensorflow.keras.activations import tanh 
-from tensorflow.keras.activations import *
 import tensorflow as tf
+from tensorflow import keras
+from keras.activations import *
+from keras.layers import Dense , Input , Embedding, Dropout, GRU
+from keras.layers import Bidirectional , Layer
 
 class Encoder (Layer):
      
-     def _init_(self, embdim, intdim, enc_dimh, dec_dim_h, t_drop):
+     def __init__(self, embdim, intdim, enc_dimh, dec_dim_h, t_drop):
          super(Encoder, self)._init_()
          #ri :output of the reset gate
          self.emb = Embedding(intdim, embdim) #size of the sequence, and dimension of the embedding
