@@ -7,7 +7,7 @@ import numpy as np
 class Attention_trad (Layer) :
     def __init__(self, dec_hdim) :    #We need the hidden satate of the decoder and the encoder 
         #We apply a linear transformation 
-        super(attention_trad, self).__init__()
+        super(Attention_trad, self).__init__()
         self.inp_shape = dec_hdim
         
     def build (self, inp_shape = dec_hdim) : #State of the layer (weights)
