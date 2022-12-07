@@ -36,18 +36,17 @@ source_raw = load_data(path_fr[0])
 target_raw = load_data(path_en[0])
 
 # TEXT PREPROCESSING
-# Standardization (to strip the accent from the French dataset)
+# Standardization (to strip the accent from the French dataset and keep punctuation) 
 def tf_Standardization(text):
   # Split accented characters.
   text = tf_text.normalize_utf8(text, 'NFKD')
   # Keep space, a to z, and select punctuation.
-  text = tf.strings.regex_replace(text, '[^ a-z.?!,¿]', '')
+  text = tf.strings.regex_replace(text, '[^ a-z A-Z.?!,¿\']', '')
   # Add spaces around punctuation.
-  text = tf.strings.regex_replace(text, '[.?!,¿]', r' \0 ')
+  text = tf.strings.regex_replace(text, '[.?!,¿:;\']', r' \0 ')
   # Strip whitespace.
   text = tf.strings.strip(text)
-
-  text = tf.strings.join(['[START]', text, '[END]'], separator=' ')
+    
   return text
 
 source_raw = [tf_Standardization(x) for x in source_raw]
