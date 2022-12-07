@@ -11,3 +11,5 @@ This project aims to implement the algorithm  in the research paper ["Neural Mac
 tensorflow==2.10.0  
 tensorflow-text==2.10.0
 
+(En cours de développement)
+
