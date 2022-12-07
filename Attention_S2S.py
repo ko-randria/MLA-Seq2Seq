@@ -4,7 +4,7 @@ from keras.layers import Layer
 from keras.activations import *
 import numpy as np 
 
-class Attention_trad (Layer) :
+class attention (Layer) :
     def __init__(self, dec_hdim) :    #We need the hidden satate of the decoder and the encoder 
         #We apply a linear transformation 
         super(Attention_trad, self).__init__()
