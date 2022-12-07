@@ -15,20 +15,23 @@ class Model(Layer):
         self.encoder = Encoder
         self.decoder = Decoder
     
-    def call(self, source, target):
-        # compute the encoder outputs and hidden states
-        encoder_outp, hidden = self.encoder.call(source)
-
-        # Decoder
-        initializer = tf.keras.initializers.Zeros()
-        model_output = initializer(shape=(target.shape[0],))
-        for i in range(len(target)):
-            #insert input token embedding, previous hidden state and all encoder hidden states
-            #receive output tensor (predictions) and new hidden state
-            output, hidden = self.decoder.call(model_output, hidden, encoder_output, i )
-            
-            #place predictions in a tensor holding predictions for each token
-            model_output[i] = output
+    def call (self, seq, solut) :  #Take as input the source sentence,and its translation  
+        sol_len = solut.shape[0]  # We extract the lenght of the translation   
+        len_seq = seq.shape[0] #  We extract the lenght of the source 
+        batch_size = seq.shape[1]   #  The batch size 
+        val_size = self.decoder.size_out
+        dec_outp = tf.zeros (sol_len, batch_size, val_size)
+        enc_outp, hidden = self.encoder(seq) # We get the outputs andn the hidden states of the encoder 
+                
         
-        return model_output
+        for i in range(sol_len):#we go through the target sequence, we try to predict the same   
+            outp, hidden = self.decoder(solut, hidden, enc_outp) # we give the decoder the target, the hidden states and outputs of the encoder 
+            
+            dec_outp[i] = outp # we store  the predictions  of the decoder  
+            max_pred = outp.argmax(1) # We select the max prediction
+
+            entr =  max_pred #We replace the target by our predicted word
+
+        return dec_outp 
+    
 
