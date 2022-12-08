@@ -4,7 +4,7 @@ from keras.layers import Embedding, Dropout, GRU
 from keras.layers import Layer
 from keras.activations import *
 import numpy as np 
-from Attention import Attention_S2S
+from Attention_S2S import attention
 
 class Decoder (Layer) :
 
