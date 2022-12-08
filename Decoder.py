@@ -8,11 +8,11 @@ from Attention import Attention_S2S
 
 class Decoder (Layer) :
 
-    def __init__(self,max_hid_lay= 500,  size_out, size_emb, enc_dimh, dec_dimh, t_drop, Attention_trad): 
+    def __init__(self,  size_out, size_emb, enc_dimh, t_drop, Attention_trad,max_hid_lay= 500): 
         
         super(Decoder, self).__init__()
         
-        self.attention = Attention_trad
+        self.attention = attention
         self.embedding = Embedding(size_out, size_emb) #Embedding matrix of the target word
         self.rnn = GRU (enc_dimh)
         self.dropout = Dropout(t_drop)
