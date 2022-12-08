@@ -6,8 +6,7 @@ import numpy as np
 
 class attention (Layer) :
     def __init__(self, dec_hdim) :    #We need the hidden satate of the decoder and the encoder 
-        #We apply a linear transformation 
-        super(Attention_trad, self).__init__()
+        super(attention, self).__init__()
         self.inp_shape = dec_hdim
         
     def build (self, inp_shape = dec_hdim) : #State of the layer (weights)
@@ -19,7 +18,7 @@ class attention (Layer) :
         v_init = tf.keras.initializers.Zeros() 
         self.Va = tf.Variable(initial_value=v_init(shape=(self.inp_shape[-1], self.units),), trainable=True)#shape : n, with n : number of hidden states
         
-    def call (self, outp_enc, hidden_dec ) : #hidden : hj, hidden state of the j th word (from the encoder), out_dec = hidden state decoder 
+    def call (self, hidden_dec,outp_enc ) : #hidden : hj, hidden state of the j th word (from the encoder), out_dec = hidden state decoder 
         #We compute the attention : 
         a = self.Va.T * tanh(self.Wa *hidden_dec[-1] + self.Ua * outp_enc)  #hidden_dec[-1] : decoder hidden state of i-1, (one value)
         alpha = tf.nn.softmax(a) #We normalize the output probabilities
