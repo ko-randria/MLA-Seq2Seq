@@ -34,6 +34,16 @@ def load_data(path):
 
 source_raw = load_data(path_fr[0])
 target_raw = load_data(path_en[0])
+#Convert texts to numeric vectors 
+#Target
+Token_Target = Tokenizer(num_words=30000)
+Token_Target.fit_on_texts(target_raw[:,0])
+num_trg = Token_Target.texts_to_sequences(target_raw[:,0])
+
+#Source 
+Token_Src = Tokenizer(num_words=30000)
+Token_Src.fit_on_texts(source_raw[:,0])
+num_src = Token_Src.texts_to_sequences(source_raw[:,0])
 
 # TEXT PREPROCESSING
 # Standardization (to strip the accent from the French dataset and keep punctuation) 
@@ -49,12 +59,12 @@ def tf_Standardization(text):
     
   return text
 
-source_raw = [tf_Standardization(x) for x in source_raw]
-target_raw  = [tf_Standardization(x) for x in target_raw]
+#source_raw = [tf_Standardization(x) for x in source_raw]
+#target_raw  = [tf_Standardization(x) for x in target_raw]
 
-tokenizer = tf_text.WhitespaceTokenizer()
-source_raw  = [tokenizer.tokenize(x) for x in source_raw ]
-target_raw  = [tokenizer.tokenize(x) for x in target_raw ]
+#tokenizer = tf_text.WhitespaceTokenizer()
+#source_raw  = [tokenizer.tokenize(x) for x in source_raw ]
+#target_raw  = [tokenizer.tokenize(x) for x in target_raw ]
 
 print("\n")
 print("TEST START\n")
