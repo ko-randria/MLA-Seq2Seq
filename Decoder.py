@@ -25,17 +25,20 @@ class Decoder (Layer) :
     def build(self):
         w_init = tf.keras.initializers.RandomNormal(mean=0.0, stddev=0.001**2)
         #Weight matrices  
-        self.W0 = tf.Variable(initial_value = w_init(shape=(self.size_out,self.max_hid_lay,self.units),), trainable=True)
+        self.W0 = tf.Variable(initial_value = w_init(shape=(self.size_out,self.max_hid_lay),), trainable=True)
 
-        self.U0 = tf.Variable(initial_value = w_init(shape=(2*self.max_hid_lay,self.enc_dimh,self.units),), trainable=True)
-        self.V0 = tf.Variable(initial_value = w_init(shape=(2*self.max_hid_lay,self.size_emb,self.units),), trainable=True)
-        self.C0 = tf.Variable(initial_value = w_init(shape=(2*self.max_hid_lay,2*self.enc_dimh,self.units),), trainable=True)
+        self.U0 = tf.Variable(initial_value = w_init(shape=(2*self.max_hid_lay,self.enc_dimh),), trainable=True)
+        self.V0 = tf.Variable(initial_value = w_init(shape=(2*self.max_hid_lay,self.size_emb),), trainable=True)
+        self.C0 = tf.Variable(initial_value = w_init(shape=(2*self.max_hid_lay,2*self.enc_dimh),), trainable=True)
  
     def call (self, entr, hidden, outp_enc, iterat ) :
         emb =  self.embedding(entr)
-        emb = Dropout(emb)
-        attr = self.attention.call(hidden, outp_enc ) #We compute the attention between this two terms 
-        outp, hidden = self.rnn(emb)
+        emb_r = np.reshape(emb,(-1,np.shape(emb)[0],np.shape(emb)[1]))
+        hid_dec = self.rnn(emb_r)
+        #emb = Dropout(emb)
+        attr = self.attention.build(self.enc_dimh)
+        attr = self.attention.call(hid_dec, hidden) #We compute the attention between this two terms 
+        entr = tf.cast(entr, tf.float32)
         t = self.U0 * hidden + self.V0 * emb * outp + self.C0 * attr
         ti = np.max(t[2*iterat-1:2*iterat])
         prediction = np.exp(outp.T*self.W0*ti)  
