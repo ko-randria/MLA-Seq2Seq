@@ -77,13 +77,18 @@ print("TEST END\n")
 #INPUT_DIM = 30
 #OUTPUT_DIM = 30
 #DROPOUT = 0.5
+#Padding :  We fix the max lenght at 30 
+num_src  = pad_sequences(num_src, maxlen=30, truncating='post')
+num_trg  = pad_sequences(num_trg, maxlen=30, truncating='post')
+encoder = Encoder(WORD_EMBEDDING , INPUT_DIM , HIDDEN_UNIT, HIDDEN_UNIT, DROPOUT)
+attention = Attention_S2S(HIDDEN_UNIT)
+decoder =Decoder(OUTPUT_DIM, WORD_EMBEDDING, HIDDEN_UNIT, DROPOUT, attention )
+model = Model(encoder,decoder)
+for i in range (len(source_raw)):
 
-#encoder = Encoder(WORD_EMBEDDING , INPUT_DIM , HIDDEN_UNIT, HIDDEN_UNIT, DROPOUT)
-#attention = Attention_S2S(HIDDEN_UNIT)
-#decoder =Decoder(OUTPUT_DIM, WORD_EMBEDDING, HIDDEN_UNIT, DROPOUT, attention )
-
-#model = Model(encoder,decoder)
-
+    source = tf.convert_to_tensor(num_src[i])
+    target = tf.convert_to_tensor(num_trg[i])  
+    train = model_training(param, model.call(source,target))
 #inputs= tf.keras.layers.Input(shape=(30,))
 
 #S2S_model = tf.keras.Model(inputs=inputs, outputs=model)
