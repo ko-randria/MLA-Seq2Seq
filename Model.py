@@ -14,7 +14,8 @@ class Model(Layer):
 
         self.encoder = Encoder
         self.decoder = Decoder
-    
+        self.trad = []
+        
     def call (self, seq, solut) :  #Take as input the source sentence,and its translation  
         sol_len = solut.shape[0]  # We extract the lenght of the translation   
         len_seq = seq.shape[0] #  We extract the lenght of the source 
@@ -25,11 +26,10 @@ class Model(Layer):
                 
         
         for i in range(sol_len):#we go through the target sequence, we try to predict the same   
-            outp, hidden = self.decoder(solut, hidden, enc_outp, i) # we give the decoder the target, the hidden states and outputs of the encoder         
-            dec_outp[i] = outp # we store  the predictions  of the decoder  
-            max_pred = outp.argmax(1) # We select the max prediction
-            entr =  max_pred #We replace the target by our predicted word
+            outp, hidden = self.decoder(solut[0:i], hidden, enc_outp, i) # we give the previous target world, the hidden states of the decoder and outputs of the encoder         
+            a = np.argmax(outp) ## We select the max prediction
+            self.trad.append(solut[a])
 
-        return dec_outp 
+        return self.trad 
     
 
