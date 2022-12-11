@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow import keras
-from keras.layers import Embedding, Dropout, GRU
+from keras.layers import Embedding, Dropout, GRU, Dense
 from keras.layers import Layer
 from keras.activations import *
 import numpy as np 
@@ -8,40 +8,39 @@ from Attention_S2S import attention
 
 class Decoder (Layer) :
 
-    def __init__(self,  size_out, size_emb, enc_dimh, t_drop, Attention_trad,max_hid_lay= 500): 
+    def __init__(self,  size_out, size_emb, enc_dimh, dec_dimh, t_drop, attention, max_hid_lay= 500): 
         
         super(Decoder, self).__init__()
-        
-        self.attention = attention
-        self.embedding = Embedding(size_out, size_emb) #Embedding matrix of the target word
-        self.rnn = GRU (enc_dimh)
+        self.attention = attention 
+        self.embedding = Embedding(size_emb, size_emb) #Embedding matrix of the target word
+        w_init = tf.keras.initializers.RandomNormal(mean=0.0, stddev=0.001**2)
+        self.rnn = GRU (dec_dimh, kernel_initializer = w_init ) 
         self.dropout = Dropout(t_drop)
-        
-        self.size_out = size_out
         self.max_hid_lay = max_hid_lay
         self.enc_dimh = enc_dimh 
         self.size_emb = size_emb
-        
-    def build(self):
-        w_init = tf.keras.initializers.RandomNormal(mean=0.0, stddev=0.001**2)
-        #Weight matrices  
-        self.W0 = tf.Variable(initial_value = w_init(shape=(self.size_out,self.max_hid_lay),), trainable=True)
+        self.dense = Dense (size_out,  activation = None )  #Dense must have the lenght of the target as the size output 
 
-        self.U0 = tf.Variable(initial_value = w_init(shape=(2*self.max_hid_lay,self.enc_dimh),), trainable=True)
-        self.V0 = tf.Variable(initial_value = w_init(shape=(2*self.max_hid_lay,self.size_emb),), trainable=True)
-        self.C0 = tf.Variable(initial_value = w_init(shape=(2*self.max_hid_lay,2*self.enc_dimh),), trainable=True)
- 
-    def call (self, entr, hidden, outp_enc, iterat ) :
+    def call (self, entr, hidden, outp_enc, iterat) :
+
         emb =  self.embedding(entr)
-        emb_r = np.reshape(emb,(-1,np.shape(emb)[0],np.shape(emb)[1]))
-        hid_dec = self.rnn(emb_r)
-        #emb = Dropout(emb)
-        attr = self.attention.build(self.enc_dimh)
-        attr = self.attention.call(hid_dec, hidden) #We compute the attention between this two terms 
-        entr = tf.cast(entr, tf.float32)
-        t = self.U0 * hidden + self.V0 * emb * outp + self.C0 * attr
-        ti = np.max(t[2*iterat-1:2*iterat])
-        prediction = np.exp(outp.T*self.W0*ti)  
+
+        emb_r = tf.expand_dims(emb,axis=0) #emb_r : [1,len(entr),size_emb]
+        emb_r = self.dropout (emb_r) #Dropout step
+        attr = self.attention.call( hidden,outp_enc) #We compute the attention between this two terms 
         
-        return prediction, hidden #We send the predicted word yi, and new values of the hidden states 
+        #The decoder given the 
+        emb = tf.expand_dims(emb_r,axis=0)
+        hid_dec = self.rnn(emb) 
+        
+        #We concatenate the three elements : attention,the output RNN decoder, the embedded world
+        predict = self.dense (tf.concat ([hid_dec, emb_r, attr],1)) #tf.concat : [len(entr), 2*enc_dimh+size_emb]
+
+        #ti = np.max(t[:, 2*iterat-1:2*iterat])
+        #print(ti)
+        #prediction = np.exp(tf.transpose(entr)*t)  
+        
+        #prediction = tf.math.reduce_max(predict)
+
+        return predict, hidden #We send the predicted word yi, and new values of the hidden states 
     
