@@ -31,7 +31,7 @@ class Decoder (Layer) :
         
         #The decoder given the 
         emb = tf.expand_dims(emb_r,axis=0)
-        hid_dec = self.rnn(emb) 
+        hid_dec = self.rnn(emb, hidden) 
         
         #We concatenate the three elements : attention,the output RNN decoder, the embedded world
         predict = self.dense (tf.concat ([hid_dec, emb_r, attr],1)) #tf.concat : [len(entr), 2*enc_dimh+size_emb]
