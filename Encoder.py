@@ -7,7 +7,7 @@ from keras.layers import Bidirectional , Layer
 class Encoder (Layer):
      
      def __init__(self, embdim, intdim, enc_dimh, dec_dim_h, t_drop, num_words):
-         super(Encoder, self)._init_()
+         super(Encoder, self).__init__()
          #ri :output of the reset gate
          self.emb = Embedding(num_words, embdim) #size of the sequence, and dimension of the embedding
          self.RNN =Bidirectional(GRU (enc_dimh, return_sequences=False, return_state = True ))  #Choose the GRU because he returns the hidden states and the outputs
