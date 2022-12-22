@@ -6,10 +6,10 @@ from keras.layers import Bidirectional , Layer
 
 class Encoder (Layer):
      
-     def __init__(self, embdim, intdim, enc_dimh, dec_dim_h, t_drop):
+     def __init__(self, embdim, intdim, enc_dimh, dec_dim_h, t_drop, num_words):
          super(Encoder, self)._init_()
          #ri :output of the reset gate
-         self.emb = Embedding(intdim, embdim) #size of the sequence, and dimension of the embedding
+         self.emb = Embedding(num_words, embdim) #size of the sequence, and dimension of the embedding
          self.RNN =Bidirectional(GRU (enc_dimh, return_sequences=False, return_state = True ))  #Choose the GRU because he returns the hidden states and the outputs
          self.drop = Dropout(t_drop) 
          self.lin = Dense(dec_dim_h, activation = None ) # Because Multilayer perceptron
