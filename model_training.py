@@ -38,7 +38,7 @@ class model_training:
         # Training step, this methods return the loss value for one step of learning on the training dataset
         with tf.GradientTape() as tape:
             # forward pass
-           tape.watch(self.model.trainable_variables)
+            tape.watch(self.model.trainable_variables)
             predictions = self.model(data)
             loss = self.loss_function(labels, predictions)
         # calcul des gradients
