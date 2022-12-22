@@ -14,7 +14,7 @@ class Encoder (Layer):
          self.drop = Dropout(t_drop) 
          self.lin = Dense(dec_dim_h, activation = None ) # Because Multilayer perceptron
              
-    def call (self, seq) :
+     def call (self, seq) :
          emb_mod  = self.emb(seq) #Embedding step we give to our data different dimension 
             
          emb_mod = self.drop(emb_mod) #Dropout, we want to avoid the overfitting 
