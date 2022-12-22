@@ -1,8 +1,8 @@
-from tensorflow.keras.layers import Dense , Input , SimpleRNN, LSTM , Embedding, Dropout, GRU
-from tensorflow.keras.layers import Bidirectional , Attention, Layer
-from tensorflow.keras.activations import *
+from tensorflow import keras
+from keras.layers import Dense , Input , SimpleRNN, LSTM , Embedding, Dropout, GRU
+from keras.layers import Bidirectional , Attention, Layer
+from keras.activations import *
 import tensorflow as tf
-import numpy as np
 from Attention_S2S import attention
 from Decoder import Decoder
 from Encoder import Encoder
