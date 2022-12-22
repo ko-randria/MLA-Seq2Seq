@@ -79,11 +79,11 @@ num_trg  = pad_sequences(num_trg, maxlen=30, truncating='post')
 INPUT_DIM = 30 # number of words
 OUTPUT_DIM = 30 
 DROPOUT = 0.5
-
-encoder = Encoder(INPUT_DIM, WORD_EMBEDDING , HIDDEN_UNIT, HIDDEN_UNIT, DROPOUT)
+NUM_WORDS = 30000
+encoder = Encoder(INPUT_DIM, WORD_EMBEDDING , HIDDEN_UNIT, HIDDEN_UNIT, DROPOUT, NUM_WORDS)
 attention = attention(HIDDEN_UNIT)
 HIID =tf.zeros((1, 1, 1000))
-decoder =Decoder(OUTPUT_DIM, WORD_EMBEDDING, HIDDEN_DEC, HIID,  DROPOUT, attention )
+decoder =Decoder(OUTPUT_DIM, WORD_EMBEDDING, HIDDEN_DEC, HIID,  DROPOUT, attention, NUM_WORDS )
 
 # Input
 input1 =  tf.keras.Input(shape=(30),dtype=tf.float32)
