@@ -66,7 +66,7 @@ class model_training:
             start_epoch=time.time()
             train_loss = 0
 
-            for step in range(len(train_set.shape[0])):
+            for step in range(np.shape(train_set)[0]):
                 start_step = time.time()
                 train_loss += self.train_step(train_set[step], output[step])
                 # evaluate_loss = self.evaluate_step()
