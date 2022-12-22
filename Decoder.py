@@ -27,9 +27,9 @@ class Decoder (Layer) :
         emb_r = tf.expand_dims(emb,axis=0) # emb_r : [1,len(entr),size_emb]
         emb_r = self.dropout (emb_r) # Dropout step
         attr = self.attention.call(outp_enc, hidden) # We compute the attention between this two terms 
-        ensem = keras.layers.concatenate(hidden, emb_r, attr)
+        ensem = keras.layers.concatenate([hidden, emb, attr])
+        ensem = tf.expand_dims(ensem,axis=0)
         hid_dec = self.rnn (ensem)
-
         predict = self.dense (tf.concat ([hid_dec, tf.expand_dims(tf.squeeze(emb_r), axis=0), attr],1)) 
 
         return [predict, hid_dec]
