@@ -38,6 +38,7 @@ class model_training:
         # Training step, this methods return the loss value for one step of learning on the training dataset
         with tf.GradientTape() as tape:
             # forward pass
+           tape.watch(self.model.encoder.trainable_variables)
             predictions = self.model(data)
             loss = self.loss_function(labels, predictions)
         # calcul des gradients
@@ -65,9 +66,9 @@ class model_training:
             start_epoch=time.time()
             train_loss = 0
 
-            for step in range(len(train_set)):
+            for step in range(len(train_set.shape[0])):
                 start_step = time.time()
-                train_loss += self.train_step(train_set[step], output)
+                train_loss += self.train_step(train_set[step], output[step])
                 # evaluate_loss = self.evaluate_step()
                 average_time_step.append(time.time()-start_step)
             
