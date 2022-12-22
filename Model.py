@@ -16,20 +16,23 @@ class Model(Layer):
         self.decoder = Decoder
         self.trad = []
         
-    def call (self, seq, solut) :  #Take as input the source sentence,and its translation  
-        sol_len = solut.shape[0]  # We extract the lenght of the translation   
-        len_seq = seq.shape[0] #  We extract the lenght of the source 
-        batch_size = seq.shape[1]   #  The batch size 
-        val_size = self.decoder.size_out
-        dec_outp = tf.zeros (sol_len, batch_size, val_size)
-        enc_outp, hidden = self.encoder(seq) # We get the outputs andn the hidden states of the encoder 
-                
-        
-        for i in range(sol_len):#we go through the target sequence, we try to predict the same   
-            outp, hidden = self.decoder(solut[0:i], hidden, enc_outp, i) # we give the previous target world, the hidden states of the decoder and outputs of the encoder         
-            a = np.argmax(outp) ## We select the max prediction
+    def call (self, seq, solut) :  #Take as input the source sentence,and its translation 
+
+        sol_len = solut.get_shape()[-1]  
+        enc_outp, hidden = self.encoder(inputs=seq)
+        self.trad = []
+
+        for i in range(sol_len): # we go through the target sequence because we are trying to to predict the same    
+     
+            outp, hidden = self.decoder(inputs=[tf.convert_to_tensor(solut[i]), enc_outp, hidden])
+            a = tf.math.argmax(outp)
+            a = tf.math.argmax(a)
+            a = tf.cast(a, dtype = tf.int32)
+
+            # if a>=sol_len : 
+            #     a = tf.cast(sol_len-1, dtype = tf.int32)
             self.trad.append(solut[a])
 
-        return self.trad 
+        return tf.convert_to_tensor(self.trad, dtype = tf.int32) 
     
 
