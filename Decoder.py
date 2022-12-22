@@ -7,11 +7,11 @@ from Attention_S2S import attention
 
 class Decoder (Layer) :
 
-    def __init__(self,  size_out, size_emb, enc_dimh, dec_dimh, t_drop, attention, max_hid_lay= 500): 
+    def __init__(self,  size_out, size_emb, enc_dimh, dec_dimh, t_drop, attention,num_words,  max_hid_lay= 500): 
         
         super(Decoder, self).__init__()
         self.attention = attention 
-        self.embedding = Embedding(size_emb, size_emb) # Embedding matrix of the target word
+        self.embedding = Embedding(num_words, output_dim = size_emb) # Embedding matrix of the target word
 
         w_init = tf.keras.initializers.RandomNormal(mean=0.0, stddev=0.001**2)
         self.rnn = GRU (1000, kernel_initializer = w_init, return_sequences=False, input_shape = (1,1000))
@@ -27,8 +27,8 @@ class Decoder (Layer) :
         emb_r = tf.expand_dims(emb,axis=0) # emb_r : [1,len(entr),size_emb]
         emb_r = self.dropout (emb_r) # Dropout step
         attr = self.attention.call(outp_enc, hidden) # We compute the attention between this two terms 
-
-        hid_dec = self.rnn (emb_r )
+        ensem = keras.layers.concatenate(hidden, emb_r, attr)
+        hid_dec = self.rnn (ensem)
 
         predict = self.dense (tf.concat ([hid_dec, tf.expand_dims(tf.squeeze(emb_r), axis=0), attr],1)) 
 
