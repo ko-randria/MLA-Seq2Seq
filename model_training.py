@@ -12,7 +12,7 @@ import Decoder
 # je vous upload ça au cas ou en attendant
 
 class model_training:
-    def __init__(self, param, model, loss):
+    def __init__(self, param, model):
 
         self.model = model
         self.loss_function = tf.keras.losses.MeanSquaredError()
